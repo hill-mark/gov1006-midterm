@@ -1,0 +1,45 @@
+---
+title: "Midterm 1"
+output: pdf_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(dplyr)
+library(janitor)
+library(haven)
+library(tidyverse)
+
+```
+
+```{r}
+
+
+# Load Data
+
+csv_data <- read_csv("dataverse_files/anxiety.csv") %>% clean_names()
+
+dta_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
+
+
+```
+
+
+```{r}
+
+# Table 1 in paper
+# (1)
+
+lm( data = filter(dta_data, anxcond3 > 0), formula = scd_brad_self_report1_mean ~ anxcond, na.omit = TRUE) 
+
+
+# (2) 
+
+lm( data = filter(dta_data, anxcond3 > 0), immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
+
+
+
+
+```
+
