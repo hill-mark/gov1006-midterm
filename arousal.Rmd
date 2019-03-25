@@ -41,5 +41,54 @@ lm( data = filter(dta_data, anxcond3 > 0), immigration ~ storycond + anxcond + s
 
 
 
+
 ```
+
+
+```{r}
+
+# figure 2
+
+
+
+
+```
+
+
+
+
+
+
+
+```{r}
+
+# figure 3
+
+library(mediation)
+
+# Causal Mediation Plot
+
+# Load Data
+
+anxiety<-read.csv("dataverse_files/anxiety.csv") 
+
+# Make Subsets (do this last)
+
+noRelaxCond <- subset(anxiety, anxcond3>0)
+
+# Outcome Model
+y <- lm(formula = immigration ~ anxcond + SCDBradSelfReport1_mean+storycond, data= noRelaxCond)
+
+# Mediator Model
+m<-lm(formula = SCDBradSelfReport1_mean ~ anxcond+storycond, data= noRelaxCond)
+
+# Mediation Analysis
+m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="SCDBradSelfReport1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
+
+plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"))
+
+
+
+```
+
 

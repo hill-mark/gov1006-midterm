@@ -7,7 +7,7 @@
 # Note: most figures and tables are created with accompanying Stata .do file
 
 
-library(Zelig)
+library(mediation)
 # Figure 3
 # Causal Mediation Plot
 
@@ -18,11 +18,11 @@ anxiety<-read.csv("dataverse_files/anxiety.csv")
 noRelaxCond <- subset(anxiety, anxcond3>0)
 
 #Outcome Model
-y <- zelig(immigration ~ anxcond + SCDBradSelfReport1_mean+storycond, model="ls", data= noRelaxCond)
+y <- lm(formula = immigration ~ anxcond + SCDBradSelfReport1_mean+storycond, data= noRelaxCond)
 summary(y) # summarize results from model
 
 #Mediator Model
-m<-zelig(SCDBradSelfReport1_mean ~ anxcond+storycond, model="ls", data= noRelaxCond)
+m<-lm(formula = SCDBradSelfReport1_mean ~ anxcond+storycond, data= noRelaxCond)
 summary(m) # summarize results from model
 
 # Mediation Analysis
