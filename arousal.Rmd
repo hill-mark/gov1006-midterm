@@ -6,7 +6,7 @@ output: pdf_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
-
+library(stargazer)
 library(psych)
 library(mediation)
 library(janitor)
@@ -24,8 +24,13 @@ all_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
 
 ```
 
+# Abstract
 
-```{r, table 1}
+This document is the culmination of the first half of the semester's studies in replicating published journal articles. In this document, I have replicated 
+
+\newpage
+
+```{r table 1, results='asis'}
 
 noRelaxCond <- filter(all_data, anxcond3 > 0)
 
@@ -37,9 +42,10 @@ m <- lm( data = noRelaxCond, formula = scd_brad_self_report1_mean ~ anxcond)
 # (2) 
 
 y <- lm( data = noRelaxCond, immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
+stargazer(m, y, header = FALSE)
 
 ```
-
+\newpage
 
 ```{r, figure 2}
 
@@ -59,7 +65,7 @@ ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_min
 
 
 
-
+\newpage
 
 
 
@@ -71,7 +77,7 @@ ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_min
 # Mediation Analysis
 m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
 
-plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"))
+plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6, title = "asd") 
 
 
 
@@ -80,6 +86,8 @@ plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anx
 
 
 ```{r, extension}
+
+
 
 ```
 
