@@ -51,6 +51,13 @@ lm( data = filter(all_data, anxcond3 > 0), immigration ~ storycond + anxcond + s
 # figure 2
 
 
+dta_small <- select(all_data, scd_brad_self_report1_mean, anxcond3) %>% filter(!is.na(anxcond3),!is.na(scd_brad_self_report1_mean))
+
+
+ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_minimal() +
+  stat_summary(fun.y=mean, geom="point", size=2) + 
+  stat_summary(fun.data = mean_se, geom = "errorbar")
+
 
 
 ```
