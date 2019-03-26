@@ -6,42 +6,63 @@ output: pdf_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
+# load all of our libraries that we are going to use
+
 library(stargazer)
 library(psych)
 library(mediation)
 library(janitor)
 library(haven)
+library(arm)
 library(tidyverse)
 
 ```
 
 ```{r, load data}
 
-# Load Data
+# Load Data in, and select only what we need to do our regressions
 
-all_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
+all_data <- read_dta("dataverse_files/replicationdata.dta") %>% 
+  clean_names() %>% 
+  select(
+    scd_brad_self_report1_mean, 
+    scd_brad_vid_manip_all_mean,
+    anxcond3,
+    anxcond, 
+    immigration, 
+    storycond)
 
 
 ```
 
 # Abstract
 
-This document is the culmination of the first half of the semester's studies in replicating published journal articles. In this document, I have replicated 
+This document is the culmination of the first half of the semester's studies in replicating published journal articles. In this document, I have replicated Table 1, Figure 2, and Figure 3 from the article “Physiological arousal and political beliefs."
 
 \newpage
 
 ```{r table 1, results='asis'}
 
+# select only the neutral and anxiety conditions
+
 noRelaxCond <- filter(all_data, anxcond3 > 0)
 
-# Table 1 in paper
-# (1)
+# (1) perform frequentist linear regression on the conductance value
+# while filling out the report, using the type of video used. 
+# note that this is done after eliminating the neutral data
 
 m <- lm( data = noRelaxCond, formula = scd_brad_self_report1_mean ~ anxcond) 
 
-# (2) 
+# (2) perform frequentist linear regression on the feelings towards 
+# immigrants (scored using some combination of the data), using 
+# the type of immigration story used, the type of video used, and 
+# the conductance levels while filling out the report
+# note that this is done after eliminating the neutral data
 
 y <- lm( data = noRelaxCond, immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
+
+# throw this into a table
+
 stargazer(m, y, header = FALSE)
 
 ```
@@ -51,11 +72,20 @@ stargazer(m, y, header = FALSE)
 
 # figure 2
 
+# select only the data that is the type of video watched and the 
+# value of the skin conductance, and make sure that they are all
+# useable values (no NAs)
 
-dta_small <- select(all_data, scd_brad_self_report1_mean, anxcond3) %>% filter(!is.na(anxcond3), !is.na(scd_brad_self_report1_mean))
+dta_small <- select(all_data, scd_brad_vid_manip_all_mean, anxcond3) %>%
+  filter(!is.na(anxcond3), !is.na(scd_brad_vid_manip_all_mean))
 
+# plot these, with error bars (that is what mean_se is for)
+# look here for more direction:
+# https://stackoverflow.com/questions/38599335/
+# how-to-add-standard-error-bars-to-a-box-and-whisker-plot-using-ggplot2
+# but place the link all on one line
 
-ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_minimal() +
+ggplot(dta_small, aes(x = anxcond3, y = scd_brad_vid_manip_all_mean)) + theme_minimal() +
   stat_summary(fun.y=mean, geom="point", size=2) + 
   stat_summary(fun.data = mean_se, geom = "errorbar")
 
@@ -70,25 +100,83 @@ ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_min
 
 
 ```{r, figure 3}
-# figure 3
 
 # Causal Mediation Plot
 
 # Mediation Analysis
+
+# basically used to measure the actual effect of the treatment, getting rid
+# of the mediator variable (in this case, the conductance)
+
 m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
 
-plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6, title = "asd") 
+plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6) 
 
 
 
 ```
 
 
+\newpage
 
-```{r, extension}
+```{r, extension table 1, results = 'asis'}
+
+noRelaxCond <- filter(all_data, anxcond3 > 0)
+
+# re-run the regressions above, but with a bayesian approach instead of a 
+# frequentist approach
+
+m_default_prior <- bayesglm( data = noRelaxCond, formula = scd_brad_self_report1_mean ~ anxcond) 
+
+y_default_prior <- bayesglm( data = noRelaxCond, immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
+
+# display summary results for these two regressions (ideally this would)
+# be formatted better
+
+summary(m_default_prior)
+summary(y_default_prior)
 
 
 
 ```
+\newpage
+```{r, plot bayes m}
+
+
+# throw these into plots
+
+coefplot(m_default_prior)
+```
+
+\newpage
+
+
+```{r, plot bayes y}
+
+
+# throw these into plots
+
+coefplot(y_default_prior)
+```
+
+\newpage
+
+```{r, extension, figure 3}
+
+# re-run Mediation Analysis, this time with the bayesian regressions
+
+m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
+
+plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6) 
+
+```
+\newpage
+
+# Bibliography
+
+Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
+ R package version 5.2.2. https://CRAN.R-project.org/package=stargazer 
+
+Renshon, Jonathan, Jooa Julia Lee, and Dustin Tingley. “Physiological arousal and political beliefs.” Political Psychology36.5 (2015): 569-585.
 
 
