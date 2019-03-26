@@ -39,7 +39,17 @@ all_data <- read_dta("dataverse_files/replicationdata.dta") %>%
 
 This document is the culmination of the first half of the semester's studies in replicating published journal articles. In this document, I have replicated Table 1, Figure 2, and Figure 3 from the article “Physiological arousal and political beliefs."
 
+Additionally, my main extension is that I have re-run the regressions for Table 1 and figure 3 using a bayesian approach, instead of the frequentist approach used in the paper. 
+
+There are some differences between these two approaches. The Bayesian approach to linear regression returns a distribution for potential values that coefficients can take on, while the frequentist simply gives a point estimate with some estimate for standard error.
+
+This Bayesian approach is helpful: it gives us another route to check the robustness of our model (indeed, the two estimates approach each other as the sample size appraoches infinity) and it allows us to inform the model about the expected value of each of the coefficients through a prior distribution. 
+
+Ultimately, the regressions run both ways reveal that the model is still robust: the coefficients in the two estimates (before and after mediation) are still significant, and are very close to one another. 
+
 \newpage
+
+# Table 1
 
 ```{r table 1, results='asis'}
 
@@ -67,6 +77,10 @@ stargazer(m, y, header = FALSE)
 
 ```
 \newpage
+
+# Figure 2
+
+Means of skin-conductance reactivity by video condition. 95% confidence intervals are in blue (online version).
 
 ```{r, figure 2}
 
@@ -97,7 +111,11 @@ ggplot(dta_small, aes(x = anxcond3, y = scd_brad_vid_manip_all_mean)) + theme_mi
 
 \newpage
 
+# Figure 3. 
 
+Causal mediation plot. Treatment is anxiety video manipulation (compared to neutral condition), Mediator is skin conductance reactivity when answering immigration questions, Outcome is composite variable of immigration preferences.
+
+Horizontal lines represent 90% confidence intervals for estimates.
 
 ```{r, figure 3}
 
@@ -118,6 +136,11 @@ plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anx
 
 
 \newpage
+
+# Table 1, extended
+
+These correspond to the output to calls to a bayesian regression, same as figure 1.
+
 
 ```{r, extension table 1, results = 'asis'}
 
@@ -140,6 +163,10 @@ summary(y_default_prior)
 
 ```
 \newpage
+
+This is a graphical representation of the coefficients of the bayesian linear regression.
+
+
 ```{r, plot bayes m}
 
 
@@ -149,6 +176,8 @@ coefplot(m_default_prior)
 ```
 
 \newpage
+
+This is a graphical representation of the coefficients of the bayesian linear regression.
 
 
 ```{r, plot bayes y}
@@ -161,11 +190,19 @@ coefplot(y_default_prior)
 
 \newpage
 
+# Figure 3, extended
+
+Causal mediation plot. Treatment is anxiety video manipulation (compared to neutral condition), Mediator is skin conductance reactivity when answering immigration questions, Outcome is composite variable of immigration preferences.
+
+Horizontal lines represent 90% confidence intervals for estimates.
+
+The extension is that this analysis was performed with bayesian linear regression, instead of frequentist linear regression.
+
 ```{r, extension, figure 3}
 
 # re-run Mediation Analysis, this time with the bayesian regressions
 
-m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
+m.out<-mediate(m_default_prior,y_default_prior, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
 
 plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6) 
 
