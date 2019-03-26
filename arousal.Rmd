@@ -15,8 +15,7 @@ library(tidyverse)
 
 ```
 
-```{r}
-
+```{r, load data}
 
 # Load Data
 
@@ -26,32 +25,28 @@ all_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
 ```
 
 
-```{r}
+```{r, table 1}
+
+noRelaxCond <- filter(all_data, anxcond3 > 0)
 
 # Table 1 in paper
 # (1)
 
-lm( data = filter(all_data, anxcond3 > 0), formula = scd_brad_self_report1_mean ~ anxcond, na.omit = TRUE) 
-
+m <- lm( data = noRelaxCond, formula = scd_brad_self_report1_mean ~ anxcond) 
 
 # (2) 
 
-lm( data = filter(all_data, anxcond3 > 0), immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
-
-
-
-
-
+y <- lm( data = noRelaxCond, immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
 
 ```
 
 
-```{r}
+```{r, figure 2}
 
 # figure 2
 
 
-dta_small <- select(all_data, scd_brad_self_report1_mean, anxcond3) %>% filter(!is.na(anxcond3),!is.na(scd_brad_self_report1_mean))
+dta_small <- select(all_data, scd_brad_self_report1_mean, anxcond3) %>% filter(!is.na(anxcond3), !is.na(scd_brad_self_report1_mean))
 
 
 ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_minimal() +
@@ -68,19 +63,10 @@ ggplot(dta_small, aes(x = anxcond3, y = scd_brad_self_report1_mean)) + theme_min
 
 
 
-```{r}
+```{r, figure 3}
 # figure 3
 
 # Causal Mediation Plot
-
-
-noRelaxCond <- filter(all_data, anxcond3 > 0)
-
-# Outcome Model
-y <- lm(formula = immigration ~ anxcond + scd_brad_self_report1_mean + storycond, data= noRelaxCond)
-
-# Mediator Model
-m<-lm(formula = scd_brad_self_report1_mean ~ anxcond + storycond, data = noRelaxCond)
 
 # Mediation Analysis
 m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
@@ -88,6 +74,12 @@ m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_m
 plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"))
 
 
+
+```
+
+
+
+```{r, extension}
 
 ```
 
