@@ -187,12 +187,16 @@ This is a graphical representation of the coefficients of the bayesian linear re
 # throw these into plots
 
 coefplot(m_default_prior)
+
 ```
 
 \newpage
 
 This is a graphical representation of the coefficients of the bayesian linear regression.
 
+This shows what the coeffecients are, and how large the error bound is on them.
+
+These error bars are actually quite large, however, they are still significant to a similar degree as the previous results. 
 
 ```{r, plot bayes y}
 
@@ -200,6 +204,7 @@ This is a graphical representation of the coefficients of the bayesian linear re
 # throw these into plots
 
 coefplot(y_default_prior)
+
 ```
 
 \newpage
@@ -210,7 +215,7 @@ Causal mediation plot. Treatment is anxiety video manipulation (compared to neut
 
 Horizontal lines represent 90% confidence intervals for estimates.
 
-The extension is that this analysis was performed with bayesian linear regression, instead of frequentist linear regression.
+The extension is that this analysis was performed with bayesian linear regression, instead of frequentist linear regression. Ultimately, the values found her coincide closely with the values computed from the frequentist analysis, and thus demonstrate a robustness of the model.
 
 ```{r, extension, figure 3}
 
