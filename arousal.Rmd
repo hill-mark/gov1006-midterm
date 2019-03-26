@@ -6,7 +6,9 @@ output: pdf_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
-library(dplyr)
+
+library(psych)
+library(mediation)
 library(janitor)
 library(haven)
 library(tidyverse)
@@ -18,9 +20,7 @@ library(tidyverse)
 
 # Load Data
 
-csv_data <- read_csv("dataverse_files/anxiety.csv") %>% clean_names()
-
-dta_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
+all_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
 
 
 ```
@@ -31,12 +31,13 @@ dta_data <- read_dta("dataverse_files/replicationdata.dta") %>% clean_names()
 # Table 1 in paper
 # (1)
 
-lm( data = filter(dta_data, anxcond3 > 0), formula = scd_brad_self_report1_mean ~ anxcond, na.omit = TRUE) 
+lm( data = filter(all_data, anxcond3 > 0), formula = scd_brad_self_report1_mean ~ anxcond, na.omit = TRUE) 
 
 
 # (2) 
 
-lm( data = filter(dta_data, anxcond3 > 0), immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
+lm( data = filter(all_data, anxcond3 > 0), immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
+
 
 
 
@@ -61,29 +62,21 @@ lm( data = filter(dta_data, anxcond3 > 0), immigration ~ storycond + anxcond + s
 
 
 ```{r}
-
 # figure 3
-
-library(mediation)
 
 # Causal Mediation Plot
 
-# Load Data
 
-anxiety<-read.csv("dataverse_files/anxiety.csv") 
-
-# Make Subsets (do this last)
-
-noRelaxCond <- subset(anxiety, anxcond3>0)
+noRelaxCond <- filter(all_data, anxcond3 > 0)
 
 # Outcome Model
-y <- lm(formula = immigration ~ anxcond + SCDBradSelfReport1_mean+storycond, data= noRelaxCond)
+y <- lm(formula = immigration ~ anxcond + scd_brad_self_report1_mean + storycond, data= noRelaxCond)
 
 # Mediator Model
-m<-lm(formula = SCDBradSelfReport1_mean ~ anxcond+storycond, data= noRelaxCond)
+m<-lm(formula = scd_brad_self_report1_mean ~ anxcond + storycond, data = noRelaxCond)
 
 # Mediation Analysis
-m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="SCDBradSelfReport1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
+m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_mean", dropobs=TRUE, boot=TRUE, conf.level=.90)
 
 plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"))
 
