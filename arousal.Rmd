@@ -73,14 +73,25 @@ y <- lm( data = noRelaxCond, immigration ~ storycond + anxcond + scd_brad_self_r
 
 # throw this into a table
 
-stargazer(m, y, header = FALSE)
+stargazer(m, y, header = FALSE,
+          omit.stat = c("f","ser"), 
+          covariate.labels = c("Story Condition",
+                               "Anxiety Manipulation",
+                               "Skin Conductance Reactivity when answering questions",
+                               "Constant"),
+          dep.var.labels = c("Skin Conductance Reactivity", "Immigration Preferences"))
 
 ```
+
+Here it should be noted that there are some problems with this preceding table. Namely, the standard errors in the chart do not match up with their appropriate significance level. The 0.232 coeffecient in model 2, for example, is listed as significant at the 0.05 level, instead of the 0.1 level. Do not be tricked by this error in the software. 
+
 \newpage
 
 # Figure 2
 
-Means of skin-conductance reactivity by video condition. 95% confidence intervals are in blue (online version).
+Means of skin-conductance reactivity by video condition. 95% confidence intervals are show surrounding the mean.
+
+
 
 ```{r, figure 2}
 
@@ -91,7 +102,8 @@ Means of skin-conductance reactivity by video condition. 95% confidence interval
 # useable values (no NAs)
 
 dta_small <- select(all_data, scd_brad_vid_manip_all_mean, anxcond3) %>%
-  filter(!is.na(anxcond3), !is.na(scd_brad_vid_manip_all_mean))
+  filter(!is.na(anxcond3), !is.na(scd_brad_vid_manip_all_mean)) %>% 
+  mutate(anxcond3_str = ifelse(anxcond3 == 0, "Relax", ifelse(anxcond3 == 1, "Neutral", "Anxiety")))
 
 # plot these, with error bars (that is what mean_se is for)
 # look here for more direction:
@@ -99,9 +111,11 @@ dta_small <- select(all_data, scd_brad_vid_manip_all_mean, anxcond3) %>%
 # how-to-add-standard-error-bars-to-a-box-and-whisker-plot-using-ggplot2
 # but place the link all on one line
 
-ggplot(dta_small, aes(x = anxcond3, y = scd_brad_vid_manip_all_mean)) + theme_minimal() +
+ggplot(dta_small, aes(x = anxcond3_str, y = scd_brad_vid_manip_all_mean)) + 
+  theme_minimal() +
   stat_summary(fun.y=mean, geom="point", size=2) + 
-  stat_summary(fun.data = mean_se, geom = "errorbar")
+  stat_summary(fun.data = mean_se, geom = "errorbar") + 
+  labs(x = "Anxiety Condition Treated", y = "Skin Conductance Reactivity while watching video" ) 
 
 
 
