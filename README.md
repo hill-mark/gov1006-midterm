@@ -1,4 +1,4 @@
-# gov1430 Midterm
+# gov1006 Midterm
 
 This is a replication of “Physiological arousal and political beliefs" by Jonathan Renshen, Jooa Julia Lee, and Dustin Tingley, found [here](https://scholar.harvard.edu/files/jooajulialee/files/physiological_arousal.pdf).
 
