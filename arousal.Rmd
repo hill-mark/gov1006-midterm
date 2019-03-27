@@ -83,8 +83,6 @@ stargazer(m, y, header = FALSE,
 
 ```
 
-Here it should be noted that there are some problems with this preceding table. Namely, the standard errors in the chart do not match up with their appropriate significance level. The 0.232 coeffecient in model 2, for example, is listed as significant at the 0.05 level, instead of the 0.1 level. Do not be tricked by this error in the software. 
-
 \newpage
 
 # Figure 2
