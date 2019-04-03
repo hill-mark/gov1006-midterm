@@ -32,7 +32,7 @@ all_data <- read_dta("dataverse_files/replicationdata.dta") %>%
     immigration, 
     storycond)
 
-
+Might be a good idea to rename these just to keep track of what is what. Not super intuitive names right now.
 ```
 
 # Abstract
@@ -46,6 +46,8 @@ There are some differences between these two approaches. The Bayesian approach t
 This Bayesian approach is helpful: it gives us another route to check the robustness of our model (indeed, the two estimates approach each other as the sample size appraoches infinity) and it allows us to inform the model about the expected value of each of the coefficients through a prior distribution. 
 
 Ultimately, the regressions run both ways reveal that the model is still robust: the coefficients in the two estimates (before and after mediation) are still significant, and are very close to one another. 
+
+Nice abstract. Very clear to the reader what you will be doing throughout the report.
 
 \newpage
 
@@ -69,6 +71,8 @@ m <- lm( data = noRelaxCond, formula = scd_brad_self_report1_mean ~ anxcond)
 # the conductance levels while filling out the report
 # note that this is done after eliminating the neutral data
 
+Great comments! Useful for you when you come back to this or others who try to replicate.
+
 y <- lm( data = noRelaxCond, immigration ~ storycond + anxcond + scd_brad_self_report1_mean) 
 
 # throw this into a table
@@ -82,6 +86,8 @@ stargazer(m, y, header = FALSE,
           dep.var.labels = c("Skin Conductance Reactivity", "Immigration Preferences"))
 
 ```
+Good replication of Table 1. It would be nice to see some footnotes or a paragraph explaining what's going on here and why it matters.
+This helps orient the reader so they are prepared to digest your extension.
 
 \newpage
 
@@ -119,6 +125,9 @@ ggplot(dta_small, aes(x = anxcond3_str, y = scd_brad_vid_manip_all_mean)) +
 
 ```
 
+These confidence intervals aren't quite right, they are all too narrow. Both neutral and relax should cross 0. It looks
+like you didn't divide the SE by sqrt(n) and multiply by 1.96. Other than that, it looks good.
+
 
 
 \newpage
@@ -142,10 +151,10 @@ m.out<-mediate(m,y, sims=500, treat="anxcond", mediator="scd_brad_self_report1_m
 
 plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6) 
 
-
+Perfect replication of Figure 3.
 
 ```
-
+Great replication overall. Talking a little more about each figure in the report is recommended.
 
 \newpage
 
@@ -174,6 +183,8 @@ summary(y_default_prior)
 
 
 ```
+I would recommned just supressing this output if you're not going to put it in a table.
+
 \newpage
 
 This is a graphical representation of the coefficients of the bayesian linear regression.
@@ -187,6 +198,9 @@ This is a graphical representation of the coefficients of the bayesian linear re
 coefplot(m_default_prior)
 
 ```
+
+Good use of Bayesian regression, but a reader has to look at this for a bit to figure out what's going on.
+Especially since it's labeled anxcond.
 
 \newpage
 
@@ -204,6 +218,7 @@ These error bars are actually quite large, however, they are still significant t
 coefplot(y_default_prior)
 
 ```
+Good use of coef plot. But definitely needs some intuitive labels and slightly more of an explanation.
 
 \newpage
 
@@ -224,6 +239,8 @@ m.out<-mediate(m_default_prior,y_default_prior, sims=500, treat="anxcond", media
 plot(m.out, labels=c("ACME\n(Physiological \nReactivity)", "Direct Effect \n(Anxiety)", "Total Effect"), cex.axis = 0.6) 
 
 ```
+Good looking extended figure 3. Nice job overall. Consider my comments when moving forward with the final paper.
+
 \newpage
 
 # Bibliography
